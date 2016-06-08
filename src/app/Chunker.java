@@ -31,14 +31,40 @@ import java.util.Scanner;
  */
 public class Chunker implements app.contracts.Chunker {
 
+    /**
+     * Input file
+     */
     protected String input;
+    
+    /**
+     * Output directory
+     */
     protected String output;
+    
+    /**
+     * The length of each chunk
+     */
     protected int capacity;
+    
+    /**
+     * The chunk
+     */
     protected int[] x;
+    
+    /**
+     * IO
+     */
     protected FileInputStream inputStream;
     protected Scanner scanner;
     protected BufferedWriter outputWriter;
 
+    /**
+     * Constructor
+     * @param input
+     * @param output
+     * @param capacity
+     * @throws FileNotFoundException
+     */
     public Chunker(String input, String output, int capacity) throws FileNotFoundException {
         this.input = input;
         this.output = output;
@@ -56,9 +82,14 @@ public class Chunker implements app.contracts.Chunker {
         }
     }
     
-    protected void write(int chunks) throws IOException {
+    /**
+     * Write the chunk using BufferedWriter
+     * @param chunkCount
+     * @throws IOException
+     */
+    protected void write(int chunkCount) throws IOException {
         this.outputWriter = new BufferedWriter(
-            new FileWriter(this.output +"/"+ chunks)
+            new FileWriter(this.output +"/"+ chunkCount)
         );
         for (int k : x) {
             outputWriter.write(k + "\n");
@@ -67,27 +98,50 @@ public class Chunker implements app.contracts.Chunker {
         outputWriter.close();
     }
     
+    /**
+     * Process a chunk
+     * @param chunkCount
+     * @return chunkCount which is updated
+     * @throws IOException
+     */
     protected int processChunk(int chunkCount) throws IOException {
         Arrays.sort(x);
         write(chunkCount);
         return chunkCount + 1;
     }
     
+    /**
+     * Chunk the input data
+     * @return the number of chunks
+     * @throws IOException
+     */
     @Override
     public int chunk() throws IOException {
+        /**
+         * Initialize chunkCount
+         */
         int chunkCount = 0;
+        
         int i = 0;
         while (this.scanner.hasNextLine()) {
+            // Read every line
+            // Parse the line as an integer
+            // And save it to the array to process the whole chunk later
             this.x[i] = Integer.parseInt(this.scanner.nextLine());
             i++;
             if (i == this.capacity) {
+                // Limit reached
                 chunkCount = processChunk(chunkCount);
+                // Reset index to 0
                 i = 0;
             }
         }
+        
         if (i > 0 && i < this.capacity) {
+            // Check for the left chunk existence
             chunkCount = processChunk(chunkCount);
         }
+        
         return chunkCount;
     }
 }
