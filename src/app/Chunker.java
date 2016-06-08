@@ -49,7 +49,7 @@ public class Chunker implements app.contracts.Chunker {
     /**
      * The chunk
      */
-    protected int[] x;
+    protected int[] chunk;
     
     /**
      * IO
@@ -69,7 +69,7 @@ public class Chunker implements app.contracts.Chunker {
         this.input = input;
         this.output = output;
         this.capacity = capacity;
-        this.x = new int[this.capacity];
+        this.chunk = new int[this.capacity];
         this.setUpIO();
     }
 
@@ -84,14 +84,15 @@ public class Chunker implements app.contracts.Chunker {
     
     /**
      * Write the chunk using BufferedWriter
+     * @param list
      * @param chunkCount
      * @throws IOException
      */
-    protected void write(int chunkCount) throws IOException {
+    protected void write(int[] list, int chunkCount) throws IOException {
         this.outputWriter = new BufferedWriter(
             new FileWriter(this.output +"/"+ chunkCount)
         );
-        for (int k : x) {
+        for (int k : list) {
             outputWriter.write(k + "\n");
         }
         outputWriter.flush();
@@ -100,13 +101,14 @@ public class Chunker implements app.contracts.Chunker {
     
     /**
      * Process a chunk
+     * @param list
      * @param chunkCount
      * @return chunkCount which is updated
      * @throws IOException
      */
-    protected int processChunk(int chunkCount) throws IOException {
-        Arrays.sort(x);
-        write(chunkCount);
+    protected int processChunk(int[] list, int chunkCount) throws IOException {
+        Arrays.sort(list);
+        write(list, chunkCount);
         return chunkCount + 1;
     }
     
@@ -124,14 +126,14 @@ public class Chunker implements app.contracts.Chunker {
         
         int i = 0;
         while (this.scanner.hasNextLine()) {
-            // Read every line
+            // For every line
             // Parse the line as an integer
             // And save it to the array to process the whole chunk later
-            this.x[i] = Integer.parseInt(this.scanner.nextLine());
+            this.chunk[i] = Integer.parseInt(this.scanner.nextLine());
             i++;
             if (i == this.capacity) {
                 // Limit reached
-                chunkCount = processChunk(chunkCount);
+                chunkCount = processChunk(this.chunk, chunkCount);
                 // Reset index to 0
                 i = 0;
             }
@@ -139,7 +141,7 @@ public class Chunker implements app.contracts.Chunker {
         
         if (i > 0 && i < this.capacity) {
             // Check for the left chunk existence
-            chunkCount = processChunk(chunkCount);
+            chunkCount = processChunk(Arrays.copyOfRange(this.chunk, 0, i), chunkCount);
         }
         
         return chunkCount;
