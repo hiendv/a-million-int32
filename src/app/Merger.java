@@ -46,7 +46,7 @@ public class Merger implements app.contracts.Merger {
     }
 
     private void setUpIO() {
-        File outputDirectory = new File(this.output);
+        File outputDirectory = new File(this.output).getParentFile();
         if (!outputDirectory.exists()) {
             outputDirectory.mkdirs();
         }
