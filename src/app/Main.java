@@ -16,8 +16,8 @@
  */
 package app;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,16 +31,21 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        String[] options = {"input", "output", "capacity"};
+        if (args.length != 3) {
+            System.out.println("Arguments: "+Arrays.toString(options));
+            return;
+        }
+        options = args.clone();
+        App app = new App();
+        app.setInput(options[0]);
+        app.setOutput(options[1]);
+        app.setCap(Integer.parseInt(options[2]));
         try {
-            Chunker chunker = new Chunker("/home/hiendv/go/src/github.com/hiendv/a-million-int32/dataset", "/tmp/numbers", 50000);
-            try {
-                chunker.chunk();
-            } catch (IOException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } catch (FileNotFoundException ex) {
+            app.init();
+        } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
 }
