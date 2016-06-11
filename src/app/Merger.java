@@ -90,7 +90,7 @@ public class Merger implements app.contracts.Merger {
     public void merge() throws IOException {
         BufferedWriter outputWriter;
         outputWriter = new BufferedWriter(
-            new FileWriter(this.output + "/merged")
+            new FileWriter(this.output)
         );
 
         skips = new long[heap.length];
