@@ -20,7 +20,8 @@
 ### Running
 - Download the latest release https://github.com/hiendv/a-million-int32/releases
 - Build the project (optional) or use the attached distribution
-- `java -jar "a-million-int32.jar" input output capacity`.  E.g. `java -jar "a-million-int32.jar" /tmp/dataset /tmp/sorted 20000`  
+- `java -jar "a-million-int32.jar" input output capacity`.  
+E.g. `java -jar "a-million-int32.jar" /tmp/dataset /tmp/sorted 20000`  
  
 ### Java & Golang
 At the beginning, I tried Go.
