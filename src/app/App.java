@@ -32,9 +32,9 @@ public class App {
     protected app.contracts.Merger merger;
 
     public void init() throws IOException {
-        this.chunker = new Chunker(this.input, "./numbers", this.cap);
+        this.chunker = new Chunker(this.input, "./build/numbers", this.cap);
         this.chunkCount = chunker.chunk();
-        this.merger = new Merger("./numbers", this.output, this.chunkCount);
+        this.merger = new Merger("./build/numbers", this.output, this.chunkCount);
         this.merger.merge();
     }
 
