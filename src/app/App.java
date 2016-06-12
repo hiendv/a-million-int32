@@ -16,6 +16,10 @@
  */
 package app;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 
 /**
@@ -25,16 +29,18 @@ import java.io.IOException;
 public class App {
 
     protected int cap;
-    protected int chunkCount;
+    protected File[] files;
     protected String input;
     protected String output;
     protected app.contracts.Chunker chunker;
     protected app.contracts.Merger merger;
 
     public void init() throws IOException {
-        this.chunker = new Chunker(this.input, "./tmp", this.cap);
-        this.chunkCount = chunker.chunk();
-        this.merger = new Merger("./tmp", this.output, this.chunkCount);
+        this.chunker = new Chunker(new FileInputStream(this.input), this.cap);
+        this.files = chunker.chunk();
+        this.merger = new Merger(files, new BufferedWriter(
+            new FileWriter(this.output)
+        ));
         this.merger.merge();
     }
 
