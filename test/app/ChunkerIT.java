@@ -18,7 +18,9 @@ package app;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.util.Random;
 import org.junit.After;
@@ -51,9 +53,9 @@ public class ChunkerIT {
 
     @Before
     public void setUp() throws IOException {
-        this.input = File.createTempFile("dataset", "tmp");
+        this.input = File.createTempFile("dataset", ".tmp");
+        System.out.println("setUp: a temp file create " + this.input.getAbsolutePath());
         this.input.deleteOnExit();
-        
         PrintWriter writer = new PrintWriter(this.input, "UTF-8");
         this.generator = new Random();
         this.count = 50000;
@@ -70,19 +72,51 @@ public class ChunkerIT {
     }
 
     /**
-     * Test of chunk method, of class Chunker.
+     * Test if the number of chunks correct
+     *
      * @throws java.lang.Exception
      */
     @Test
-    public void testChunk() throws Exception {
-        System.out.println("chunk");
+    public void testChunkCount() throws Exception {
+        System.out.println("testChunkCount");
         int cap = generator.nextInt(10000);
         Chunker instance = new Chunker(
             new FileInputStream(this.input),
             cap
         );
         File[] result = instance.chunk();
-        assertEquals((int) Math.ceil((double) this.count/cap), result.length);
+        assertEquals((int) Math.ceil((double) this.count / cap), result.length);
+    }
+    
+    /**
+     * Test if the number of lines in chunked files equal to the original number of int
+     *
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testTotalLine() throws Exception {
+        System.out.println("testTotalLine");
+        int cap = generator.nextInt(10000);
+        Chunker instance = new Chunker(
+            new FileInputStream(this.input),
+            cap
+        );
+        File[] result = instance.chunk();
+        LineNumberReader reader = null;
+        int lineCount = 0;
+        for (File f : result) {
+            try {
+                reader = new LineNumberReader(new FileReader(f));
+                while ((reader.readLine()) != null);
+                lineCount += reader.getLineNumber();
+            } catch (Exception ex) {
+            } finally {
+                if (reader != null) {
+                    reader.close();
+                }
+            }
+        }
+        assertEquals(lineCount, this.count);
     }
 
 }
