@@ -18,11 +18,14 @@ package app;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -32,98 +35,82 @@ import java.util.Scanner;
 public class Chunker implements app.contracts.Chunker {
 
     /**
-     * Input file
-     */
-    protected String input;
-    
-    /**
-     * Output directory
-     */
-    protected String output;
-    
-    /**
      * The length of each chunk
      */
     protected int capacity;
-    
+
     /**
      * The chunk
      */
     protected int[] chunk;
-    
-    /**
-     * IO
-     */
-    protected FileInputStream inputStream;
-    protected Scanner scanner;
-    protected BufferedWriter outputWriter;
+
+    protected final Scanner scanner;
 
     /**
      * Constructor
-     * @param input
-     * @param output
+     *
+     * @param in
      * @param capacity
      * @throws FileNotFoundException
      */
-    public Chunker(String input, String output, int capacity) throws FileNotFoundException {
-        this.input = input;
-        this.output = output;
+    public Chunker(InputStream in, int capacity) throws FileNotFoundException {
+        this.scanner = new Scanner(in, "UTF-8");
         this.capacity = capacity;
         this.chunk = new int[this.capacity];
-        this.setUpIO();
     }
 
-    private void setUpIO() throws FileNotFoundException {
-        this.inputStream = new FileInputStream(this.input);
-        this.scanner = new Scanner(inputStream, "UTF-8");
-        File outputDirectory = new File(this.output);
-        if (!outputDirectory.exists()) {
-            outputDirectory.mkdirs();
-        }
-    }
-    
     /**
-     * Write the chunk using BufferedWriter
-     * @param list
-     * @param chunkCount
+     * Write the chunk using writer
+     *
+     * @param chunk
+     * @param writer
      * @throws IOException
      */
-    protected void write(int[] list, int chunkCount) throws IOException {
-        this.outputWriter = new BufferedWriter(
-            new FileWriter(this.output +"/"+ chunkCount)
-        );
-        for (int k : list) {
-            outputWriter.write(k + "\n");
+    protected void write(int[] chunk, Writer writer) throws IOException {
+        for (int i : chunk) {
+            writer.write(i + "\n");
         }
-        outputWriter.flush();
-        outputWriter.close();
+        writer.flush();
+        writer.close();
     }
-    
+
     /**
      * Process a chunk
-     * @param list
-     * @param chunkCount
+     *
+     * @param chunk
      * @return chunkCount which is updated
      * @throws IOException
      */
-    protected int processChunk(int[] list, int chunkCount) throws IOException {
-        Arrays.sort(list);
-        write(list, chunkCount);
-        return chunkCount + 1;
+    protected File processChunk(int[] chunk) throws IOException {
+        Arrays.sort(chunk);
+        File temp = this.createTempFile();
+        write(chunk, new BufferedWriter(
+            new FileWriter(temp)
+        ));
+        return temp;
     }
-    
+
+    /**
+     * Temporary file creation
+     *
+     * @return File
+     * @throws IOException
+     */
+    protected File createTempFile() throws IOException {
+        return File.createTempFile("chunk", ".tmp");
+    }
+
     /**
      * Chunk the input data
+     *
      * @return the number of chunks
      * @throws IOException
      */
     @Override
-    public int chunk() throws IOException {
-        /**
-         * Initialize chunkCount
-         */
+    public File[] chunk() throws IOException {
         int chunkCount = 0;
-        
+        List<File> files = new ArrayList<>();
+
         int i = 0;
         while (this.scanner.hasNextLine()) {
             // For every line
@@ -133,17 +120,26 @@ public class Chunker implements app.contracts.Chunker {
             i++;
             if (i == this.capacity) {
                 // Limit reached
-                chunkCount = processChunk(this.chunk, chunkCount);
+                // Add the created file
+                files.add(
+                    this.processChunk(this.chunk)
+                );
+                chunkCount++;
                 // Reset index to 0
                 i = 0;
             }
         }
-        
+
         if (i > 0 && i < this.capacity) {
             // Check for the left chunk existence
-            chunkCount = processChunk(Arrays.copyOfRange(this.chunk, 0, i), chunkCount);
+            files.add(
+                this.processChunk(
+                    Arrays.copyOfRange(this.chunk, 0, i)
+                )
+            );
+            chunkCount++;
         }
-        
-        return chunkCount;
+
+        return files.toArray(new File[chunkCount]);
     }
 }
