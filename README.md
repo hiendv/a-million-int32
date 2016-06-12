@@ -31,6 +31,11 @@ E.g.
 ### Testing
 #### Seeding
 Class `Seeder` could be used as a test generator as well.  
+- int[] seed(int length)
+- File seed(int length, String name)
+- File seedFile(int length, File file)
+- PrintWriter seedWriter(int length, PrintWriter writer)
+
 #### Unit test
 Coming soon  
 #### Integration test
