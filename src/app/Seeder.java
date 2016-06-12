@@ -16,6 +16,9 @@
  */
 package app;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Random;
 
 /**
@@ -32,4 +35,25 @@ public class Seeder {
         }
         return list;
     }
+
+    public static File seed(int length, String name) throws IOException {
+        File file = File.createTempFile(name, ".tmp");
+        return Seeder.seedFile(length, file);
+    }
+
+    public static File seedFile(int length, File file) throws IOException {
+        PrintWriter writer = new PrintWriter(file, "UTF-8");
+        Seeder
+            .seedWriter(length, writer)
+            .close();
+        return file;
+    }
+
+    public static PrintWriter seedWriter(int length, PrintWriter writer) throws IOException {
+        for (int i : Seeder.seed(length)) {
+            writer.println(i);
+        }
+        return writer;
+    }
+
 }

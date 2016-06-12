@@ -21,7 +21,6 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.io.PrintWriter;
 import java.util.Random;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -53,18 +52,9 @@ public class ChunkerIT {
 
     @Before
     public void setUp() throws IOException {
-        this.input = File.createTempFile("dataset", ".tmp");
-        System.out.println("setUp: a temp file create " + this.input.getAbsolutePath());
-        this.input.deleteOnExit();
-        PrintWriter writer = new PrintWriter(this.input, "UTF-8");
         this.generator = new Random();
         this.count = 50000;
-        StringBuilder stringBuilder = new StringBuilder();
-        int[] numbers = Seeder.seed(this.count);
-        for (int i : numbers) {
-            writer.println(i);
-        }
-        writer.close();
+        this.input = Seeder.seed(this.count, "dataset");
     }
 
     @After
