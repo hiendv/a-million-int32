@@ -21,21 +21,29 @@
 - Download the latest release https://github.com/hiendv/a-million-int32/releases
 - Build the project (optional) or use the attached distribution
 - `java -jar "a-million-int32.jar" input output capacity`.  
-E.g. `java -jar "a-million-int32.jar" /tmp/dataset /tmp/sorted 20000`  
- 
-### Java & Golang
-At the beginning, I tried Go.
-I was doing just fine until I found it impossible to understand the garbage collector. Memory leaking !
-I have to admit that I'm new to Go, there are a lot to learn so I switched back to Java.
-JVM also seems to be more friendly, pass `-Xmx3m -Xms3m` to limit the memory and you're good to go.
+E.g.  
+`java -jar "a-million-int32.jar" /tmp/dataset /tmp/sorted 20000`
+
+#### Formats
+- Input: A file contains 1.000.000 integers, separated by new line character `\n`. One per line.  
+- Output: A file contains the given integers, sorted in ascending order.  
 
 ### Testing
+#### Seeding
+Class `Seeder` could be used as a test generator as well.  
 #### Unit test
 Coming soon  
 #### Integration test
-Merger  
+- Merger
+- Chunker (coming soon)  
 
-### Results & Profiling
+### Profiling
 It took 1 minutes and 10 seconds to finish the sorting.
 The input file is located in my SSD while the tmp and output file are in the HDD.
-#### Profiling will be updated later
+The details will be posted later.
+
+### Java & Golang
+At the beginning, I tried Go.
+I was doing just fine until I found it impossible to understand the garbage collector: Memory leaking.
+I have to admit that I'm new to Go, there is a lot to learn so I switched back to Java.
+JVM also seems to be more friendly, pass `-Xmx3m -Xms3m` to limit the memory and you're good to go.
