@@ -29,6 +29,12 @@ I was doing just fine until I found it impossible to understand the garbage coll
 I have to admit that I'm new to Go, there are a lot to learn so I switched back to Java.
 JVM also seems to be more friendly, pass `-Xmx3m -Xms3m` to limit the memory and you're good to go.
 
+### Testing
+#### Unit test
+Coming soon  
+#### Integration test
+Merger  
+
 ### Results & Profiling
 It took 1 minutes and 10 seconds to finish the sorting.
 The input file is located in my SSD while the tmp and output file are in the HDD.
